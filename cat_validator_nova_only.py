@@ -39,13 +39,18 @@ def get_or_create_guardrail():
         st.error(f"Guardrail error: {e}")
         return None
 
-def validate_cat_with_nova_guardrails(image_bytes):
+def validate_cat_with_nova_guardrails(image_bytes, mime_type="image/jpeg"):
     """Use Nova + Guardrails for content filtering and cat detection"""
     guardrail_id = get_or_create_guardrail()
     if not guardrail_id:
         raise Exception("Could not create or find guardrail")
     
     image_b64 = base64.b64encode(image_bytes).decode()
+    
+    # Determine image format from MIME type
+    img_format = "jpeg"
+    if mime_type == "image/png":
+        img_format = "png"
     
     payload = {
         "messages": [
@@ -54,8 +59,10 @@ def validate_cat_with_nova_guardrails(image_bytes):
                 "content": [
                     {
                         "image": {
-                            "format": "jpeg",
-                            "source": {"bytes": image_b64}
+                            "format": img_format,
+                            "source": {
+                                "bytes": image_b64
+                            }
                         }
                     },
                     {
@@ -65,7 +72,9 @@ def validate_cat_with_nova_guardrails(image_bytes):
             }
         ],
         "inferenceConfig": {
-            "maxTokens": 10
+            "maxTokens": 10,
+            "temperature": 0.0,
+            "topP": 1
         }
     }
     
@@ -84,11 +93,16 @@ def upload_to_s3(image_bytes, filename):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     s3_key = f"cats/{timestamp}_{filename}"
     
+    # Determine content type based on file extension
+    content_type = 'image/jpeg'  # default
+    if filename.lower().endswith('.png'):
+        content_type = 'image/png'
+    
     s3.put_object(
         Bucket=BUCKET_NAME,
         Key=s3_key,
         Body=image_bytes,
-        ContentType='image/jpeg'
+        ContentType=content_type
     )
     return s3_key
 
@@ -106,7 +120,12 @@ if uploaded_file:
         
         with st.spinner("Processing with Nova + Guardrails..."):
             try:
-                is_cat = validate_cat_with_nova_guardrails(uploaded_file.getvalue())
+                # Determine MIME type
+                content_type = 'image/jpeg'  # default
+                if uploaded_file.name.lower().endswith('.png'):
+                    content_type = 'image/png'
+                
+                is_cat = validate_cat_with_nova_guardrails(uploaded_file.getvalue(), content_type)
                 
                 if is_cat:
                     s3_key = upload_to_s3(uploaded_file.getvalue(), uploaded_file.name)

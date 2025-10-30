@@ -60,7 +60,7 @@ def create_guardrail():
         )
         return response['guardrailId']
 
-def validate_cat_image(image_bytes):
+def validate_cat_image(image_bytes, mime_type="image/jpeg"):
     """Use Amazon Rekognition and Bedrock Nova Lite to validate content and cats"""
     
     # First use Amazon Rekognition for content moderation
@@ -126,6 +126,11 @@ def validate_cat_image(image_bytes):
             raise e
     
     # If content checks pass, proceed with cat validation using Nova Lite
+    # Determine image format from MIME type
+    img_format = "jpeg"
+    if mime_type == "image/png":
+        img_format = "png"
+    
     payload = {
         "messages": [
             {
@@ -133,8 +138,10 @@ def validate_cat_image(image_bytes):
                 "content": [
                     {
                         "image": {
-                            "format": "jpeg",
-                            "source": {"bytes": image_b64}
+                            "format": img_format,
+                            "source": {
+                                "bytes": image_b64
+                            }
                         }
                     },
                     {
@@ -144,7 +151,9 @@ def validate_cat_image(image_bytes):
             }
         ],
         "inferenceConfig": {
-            "maxTokens": 10
+            "maxTokens": 10,
+            "temperature": 0.0,
+            "topP": 1
         }
     }
     
@@ -161,11 +170,16 @@ def upload_to_s3(image_bytes, filename):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     s3_key = f"cats/{timestamp}_{filename}"
     
+    # Determine content type based on file extension
+    content_type = 'image/jpeg'  # default
+    if filename.lower().endswith('.png'):
+        content_type = 'image/png'
+    
     s3.put_object(
         Bucket=BUCKET_NAME,
         Key=s3_key,
         Body=image_bytes,
-        ContentType='image/jpeg'
+        ContentType=content_type
     )
     return s3_key
 
@@ -186,7 +200,12 @@ if uploaded_file:
             # Validate with Bedrock
             with st.spinner("Validating if this is a cat..."):
                 try:
-                    is_cat = validate_cat_image(uploaded_file.getvalue())
+                    # Determine MIME type
+                    content_type = 'image/jpeg'  # default
+                    if uploaded_file.name.lower().endswith('.png'):
+                        content_type = 'image/png'
+                    
+                    is_cat = validate_cat_image(uploaded_file.getvalue(), content_type)
                 except ValueError as e:
                     st.error(str(e))
                     st.stop()

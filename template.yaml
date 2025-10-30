@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Infrastructure for Cat Validator Application
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+    Description: Environment name
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 128
+
+Resources:
+  # S3 Bucket for storing validated cat images
+  CatImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'thisisacatforsureyouknowit-${Environment}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldImages
+            Status: Enabled
+            ExpirationInDays: 30
+
+  # IAM Role for the application
+  CatValidatorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - bedrock.amazonaws.com
+                - rekognition.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # AWSBedrockFullAccess isn't available in all accounts/regions; keep Rekognition only for this test deploy
+        - arn:aws:iam::aws:policy/AmazonRekognitionFullAccess
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt CatImagesBucket.Arn
+                  - !Sub '${CatImagesBucket.Arn}/*'
+
+
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket created for storing cat images
+    Value: !Ref CatImagesBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketName'
+  
+  CatValidatorRoleARN:
+    Description: ARN of the IAM role created for the application
+    Value: !GetAtt CatValidatorRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-RoleARN'

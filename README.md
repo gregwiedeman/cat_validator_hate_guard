@@ -24,9 +24,25 @@ This repository contains two versions of the Cat Image Validator:
   - Amazon Bedrock
   - Amazon Rekognition (full version only)
   - Amazon S3
-- Required Python packages:
-  - streamlit
-  - boto3
+
+### Installation
+
+1. Create and activate a virtual environment:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+The requirements.txt file includes:
+- streamlit - for the web interface
+- boto3 - for AWS services integration
+- python-dotenv - for environment variables
+- Pillow - for image processing
 
 ## Version Differences
 
@@ -76,7 +92,11 @@ This repository contains two versions of the Cat Image Validator:
 - API failures
 - Content moderation failures
 
-## AWS Resources Used
+## Infrastructure Setup
+
+The application uses AWS SAM (Serverless Application Model) for infrastructure deployment. The following resources are created:
+
+### AWS Resources Used
 
 - **Amazon Bedrock**
   - Nova Lite model for cat detection
@@ -90,6 +110,36 @@ This repository contains two versions of the Cat Image Validator:
 - **Amazon S3**
   - Storage for validated cat images
   - Organized with timestamp-based keys
+
+### Infrastructure Deployment
+
+1. Install AWS SAM CLI:
+```bash
+pip install aws-sam-cli
+```
+
+2. Configure AWS credentials:
+```bash
+aws configure
+```
+
+3. Deploy the infrastructure:
+```bash
+chmod +x deploy.sh
+./deploy.sh [environment]  # environment can be 'dev' or 'prod', defaults to 'dev'
+```
+
+4. Set up environment variables:
+```bash
+cp .env.template .env
+# Update .env with the values from deployment outputs
+```
+
+### Infrastructure Files
+
+- `template.yaml` - AWS SAM template defining all required resources
+- `deploy.sh` - Deployment script for the infrastructure
+- `.env.template` - Template for application environment variables
 
 ## Security Features
 
