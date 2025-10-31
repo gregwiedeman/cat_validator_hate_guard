@@ -2,15 +2,23 @@ import streamlit as st
 import boto3
 import base64
 import json
+import os
 from datetime import datetime
+try:
+    from dotenv import load_dotenv  # type: ignore
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not available, use system environment variables
 
 # Initialize AWS clients
 bedrock_runtime = boto3.client('bedrock-runtime')
 bedrock = boto3.client('bedrock')
 s3 = boto3.client('s3')
 
-BUCKET_NAME = 'thisisacatforsureyouknowit'
-MAX_FILE_SIZE = 1024 * 1024  # 1MB
+# Configuration from environment variables
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'dev')
+BUCKET_NAME = os.getenv('BUCKET_NAME', f'thisisacatforsureyouknowit-{ENVIRONMENT}')
+MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', '1048576'))  # 1MB
 
 def get_or_create_guardrail():
     """Get existing guardrail or create new one"""

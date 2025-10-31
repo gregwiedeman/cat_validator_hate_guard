@@ -1,0 +1,69 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "venv", "venv", "{05F94FD3-B77B-E2F0-500B-568E6F852E0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{32EFE0E7-BB31-3F3C-4587-6C0021A00D63}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "python3.11", "python3.11", "{B555AB47-09B6-6E36-98C7-CA8D3CE03567}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "site-packages", "site-packages", "{5807FC24-F4BC-2292-EFDF-B2DECE2DAD60}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samcli", "samcli", "{8278E149-4B34-9136-22DB-B0179FB7C535}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{A843006D-8EF1-0E39-0C27-1CD1F5B8AC75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "init", "init", "{E541FBFA-2B5F-83B4-9A6C-163D14233138}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{D49372E5-B535-5E7E-105A-3219F60633D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cookiecutter-aws-sam-hello-dotnet", "cookiecutter-aws-sam-hello-dotnet", "{31A0260E-B667-05B0-007B-AB11A1AB5486}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "{{cookiecutter.project_name}}", "{{cookiecutter.project_name}}", "{16B6AA4D-C15C-26A2-9750-9A659385DFCD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D4845D67-7C18-F477-4E9A-300E85551AAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Tests", "venv\lib\python3.11\site-packages\samcli\lib\init\templates\cookiecutter-aws-sam-hello-dotnet\{{cookiecutter.project_name}}\test\HelloWorld.Test\HelloWorld.Tests.csproj", "{18069B23-DFF7-B728-0912-F4F704CFDF90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{58503D7F-2C5B-9FD7-2843-800CD43602DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "venv\lib\python3.11\site-packages\samcli\lib\init\templates\cookiecutter-aws-sam-hello-dotnet\{{cookiecutter.project_name}}\src\HelloWorld\HelloWorld.csproj", "{D288ACEE-329B-FC98-C211-7505390E0CBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18069B23-DFF7-B728-0912-F4F704CFDF90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18069B23-DFF7-B728-0912-F4F704CFDF90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18069B23-DFF7-B728-0912-F4F704CFDF90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18069B23-DFF7-B728-0912-F4F704CFDF90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D288ACEE-329B-FC98-C211-7505390E0CBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D288ACEE-329B-FC98-C211-7505390E0CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D288ACEE-329B-FC98-C211-7505390E0CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D288ACEE-329B-FC98-C211-7505390E0CBA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{32EFE0E7-BB31-3F3C-4587-6C0021A00D63} = {05F94FD3-B77B-E2F0-500B-568E6F852E0C}
+		{B555AB47-09B6-6E36-98C7-CA8D3CE03567} = {32EFE0E7-BB31-3F3C-4587-6C0021A00D63}
+		{5807FC24-F4BC-2292-EFDF-B2DECE2DAD60} = {B555AB47-09B6-6E36-98C7-CA8D3CE03567}
+		{8278E149-4B34-9136-22DB-B0179FB7C535} = {5807FC24-F4BC-2292-EFDF-B2DECE2DAD60}
+		{A843006D-8EF1-0E39-0C27-1CD1F5B8AC75} = {8278E149-4B34-9136-22DB-B0179FB7C535}
+		{E541FBFA-2B5F-83B4-9A6C-163D14233138} = {A843006D-8EF1-0E39-0C27-1CD1F5B8AC75}
+		{D49372E5-B535-5E7E-105A-3219F60633D0} = {E541FBFA-2B5F-83B4-9A6C-163D14233138}
+		{31A0260E-B667-05B0-007B-AB11A1AB5486} = {D49372E5-B535-5E7E-105A-3219F60633D0}
+		{16B6AA4D-C15C-26A2-9750-9A659385DFCD} = {31A0260E-B667-05B0-007B-AB11A1AB5486}
+		{D4845D67-7C18-F477-4E9A-300E85551AAF} = {16B6AA4D-C15C-26A2-9750-9A659385DFCD}
+		{18069B23-DFF7-B728-0912-F4F704CFDF90} = {D4845D67-7C18-F477-4E9A-300E85551AAF}
+		{58503D7F-2C5B-9FD7-2843-800CD43602DE} = {16B6AA4D-C15C-26A2-9750-9A659385DFCD}
+		{D288ACEE-329B-FC98-C211-7505390E0CBA} = {58503D7F-2C5B-9FD7-2843-800CD43602DE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A5A255B-B97C-4959-A75A-904EC90F26BA}
+	EndGlobalSection
+EndGlobal

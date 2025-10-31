@@ -39,10 +39,12 @@ pip install -r requirements.txt
 ```
 
 The requirements.txt file includes:
-- streamlit - for the web interface
-- boto3 - for AWS services integration
-- python-dotenv - for environment variables
-- Pillow - for image processing
+- streamlit>=1.28.0,<1.29.0 - for the web interface (Python 3.9+ compatible)
+- boto3>=1.29.2 - for AWS services integration
+- python-dotenv==1.0.0 - for environment variables
+- Pillow==10.4.0 - for image processing (updated for security)
+- urllib3==2.5.0 - HTTP library (updated for security)
+- cfn-lint==1.40.3 - for CloudFormation template validation
 
 ## Version Differences
 
@@ -126,14 +128,35 @@ aws configure
 3. Deploy the infrastructure:
 ```bash
 chmod +x deploy.sh
-./deploy.sh [environment]  # environment can be 'dev' or 'prod', defaults to 'dev'
+bash deploy.sh [environment]  # environment can be 'dev' or 'prod', defaults to 'dev'
 ```
 
-4. Set up environment variables:
+4. The deployment script automatically creates a .env file with the correct values from SAM outputs
+
+### Environment Configuration
+
+The application uses environment variables for configuration:
+- `ENVIRONMENT` - Deployment environment (dev/prod)
+- `BUCKET_NAME` - S3 bucket name for storing cat images
+- `AWS_REGION` - AWS region for services
+- `MAX_FILE_SIZE` - Maximum file size in bytes (default: 1MB)
+- `MODERATION_CONFIDENCE_THRESHOLD` - Content moderation sensitivity
+
+### Cleaning Up Resources
+
+When you're done using the application, you can clean up all AWS resources to avoid incurring charges:
+
+1. Delete all images from the S3 bucket:
 ```bash
-cp .env.template .env
-# Update .env with the values from deployment outputs
+aws s3 rm s3://thisisacatforsureyouknowit-[environment] --recursive
 ```
+
+2. Delete the AWS CloudFormation stack:
+```bash
+aws cloudformation delete-stack --stack-name cat-validator-[environment]
+```
+
+Replace `[environment]` with either 'dev' or 'prod' depending on your deployment.
 
 ### Infrastructure Files
 
@@ -151,6 +174,12 @@ cp .env.template .env
   - Misconduct
 - File size restrictions
 - Supported file type validation
+- S3 buckets with:
+  - Public access blocked
+  - Versioning enabled
+  - Access logging enabled
+  - 30-day lifecycle policy for old images
+  - Separate logging bucket for audit trails
 
 ## Usage
 
@@ -168,3 +197,29 @@ cp .env.template .env
 4. Wait for validation results
 
 5. If successful, receive S3 storage confirmation
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Bucket name conflicts**: If deployment fails due to existing bucket names, the buckets may already exist from a previous deployment. Clean up existing resources first.
+
+2. **Python version compatibility**: Ensure you're using Python 3.9+ for compatibility with all dependencies.
+
+3. **AWS credentials**: Verify AWS credentials are configured with sufficient permissions for Bedrock, S3, and Rekognition.
+
+4. **Import errors**: If `dotenv` import fails, the application will fall back to system environment variables.
+
+### Testing Deployment
+
+To test the deployment process:
+```bash
+# Deploy
+bash deploy.sh dev
+
+# Test the application
+streamlit run cat_validator.py
+
+# Clean up
+aws cloudformation delete-stack --stack-name cat-validator-dev
+```

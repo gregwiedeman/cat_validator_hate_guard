@@ -2,7 +2,13 @@ import streamlit as st
 import boto3
 import base64
 import json
+import os
 from datetime import datetime
+try:
+    from dotenv import load_dotenv  # type: ignore
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not available, use system environment variables
 
 # Initialize AWS clients
 bedrock_runtime = boto3.client('bedrock-runtime')
@@ -10,8 +16,10 @@ bedrock = boto3.client('bedrock')
 rekognition = boto3.client('rekognition')
 s3 = boto3.client('s3')
 
-BUCKET_NAME = 'thisisacatforsureyouknowit'
-MAX_FILE_SIZE = 1024 * 1024  # 1MB
+# Configuration from environment variables
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'dev')
+BUCKET_NAME = os.getenv('BUCKET_NAME', f'thisisacatforsureyouknowit-{ENVIRONMENT}')
+MAX_FILE_SIZE = int(os.getenv('MAX_FILE_SIZE', '1048576'))  # 1MB
 
 def create_guardrail():
     """Create Bedrock Guardrail for content filtering"""
@@ -39,7 +47,7 @@ def create_guardrail():
             blockedOutputsMessaging='Response blocked due to content policy.'
         )
         return response['guardrailId']
-    except Exception as e:
+    except Exception:
         # If still fails, try with a unique name
         import time
         unique_name = f'cat-validator-guardrail-{int(time.time())}'

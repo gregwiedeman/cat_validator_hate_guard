@@ -17,6 +17,20 @@ Globals:
     MemorySize: 128
 
 Resources:
+  # S3 Bucket for access logs
+  LoggingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'thisisacatforsureyouknowit-logs-${Environment}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName: !Sub 'thisisacatforsureyouknowit-logs-${Environment}'
+        LogFilePrefix: logging-bucket-access-logs/
+
   # S3 Bucket for storing validated cat images
   CatImagesBucket:
     Type: AWS::S3::Bucket
@@ -34,6 +48,9 @@ Resources:
           - Id: DeleteOldImages
             Status: Enabled
             ExpirationInDays: 30
+      LoggingConfiguration:
+        DestinationBucketName: !Ref LoggingBucket
+        LogFilePrefix: cat-images-access-logs/
 
   # IAM Role for the application
   CatValidatorRole:

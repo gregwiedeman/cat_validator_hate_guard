@@ -37,8 +37,33 @@ sam deploy \
     --parameter-overrides Environment=${ENV} \
     --no-confirm-changeset
 
-# Get outputs
+# Get outputs and create .env file
 echo "Deployment complete. Getting stack outputs..."
+BUCKET_OUTPUT=$(aws cloudformation describe-stacks \
+    --stack-name ${STACK_NAME} \
+    --query 'Stacks[0].Outputs[?OutputKey==`BucketName`].OutputValue' \
+    --output text)
+
+# Create .env file
+echo "Creating .env file..."
+cat > .env << EOF
+# AWS Configuration
+AWS_REGION=$(aws configure get region)
+AWS_PROFILE=default
+
+# Application Configuration
+ENVIRONMENT=${ENV}
+BUCKET_NAME=${BUCKET_OUTPUT}
+
+# Optional: Content Moderation Settings
+MODERATION_CONFIDENCE_THRESHOLD=50.0
+MAX_FILE_SIZE=1048576
+EOF
+
+echo "Environment file created: .env"
+echo "Bucket name: ${BUCKET_OUTPUT}"
+
+# Display all outputs
 aws cloudformation describe-stacks \
     --stack-name ${STACK_NAME} \
     --query 'Stacks[0].Outputs' \

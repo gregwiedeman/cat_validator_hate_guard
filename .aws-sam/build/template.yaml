@@ -14,11 +14,25 @@ Globals:
     Timeout: 30
     MemorySize: 128
 Resources:
+  LoggingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: thisisacatforsureyouknowit-logs-${Environment}-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LoggingConfiguration:
+        DestinationBucketName:
+          Fn::Sub: thisisacatforsureyouknowit-logs-${Environment}-${AWS::AccountId}
+        LogFilePrefix: logging-bucket-access-logs/
   CatImagesBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName:
-        Fn::Sub: thisisacatforsureyouknowit-${Environment}
+        Fn::Sub: thisisacatforsureyouknowit-${Environment}-${AWS::AccountId}
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -31,6 +45,10 @@ Resources:
         - Id: DeleteOldImages
           Status: Enabled
           ExpirationInDays: 30
+      LoggingConfiguration:
+        DestinationBucketName:
+          Ref: LoggingBucket
+        LogFilePrefix: cat-images-access-logs/
   CatValidatorRole:
     Type: AWS::IAM::Role
     Properties:
